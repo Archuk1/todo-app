@@ -20,13 +20,10 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
 
-// Central error handler
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ message: "Internal server error" });

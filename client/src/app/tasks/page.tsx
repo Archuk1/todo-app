@@ -22,8 +22,6 @@ function TasksPageContent() {
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // Fetch the full list once; filter client-side so the sidebar counts
-  // always reflect every status, not just the currently selected one.
   const { data: allTasks, isLoading, isError } = useTasks("all");
   const createTask = useCreateTask();
 
