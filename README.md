@@ -31,3 +31,9 @@ npm install
 cp .env.local.example .env.local  
 npm run dev               
 ```
+
+## Перегляд вмісту БД
+```bash
+cd server
+npx prisma studio
+```

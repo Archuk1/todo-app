@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.js";
-import taskRoutes from "./routes/tasks.js";
+import authRoutes from "./routes/authRoutes.js";
+import taskRoutes from "./routes/tasksRoutes.js";
 
 dotenv.config();
 
