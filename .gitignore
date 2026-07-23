@@ -1,9 +1,20 @@
+# dependencies
 node_modules
+
+# env
 .env
 .env.local
 
-client/node_modules
-server/node_modules
-
+# Next.js
 client/.next
+client/out
+
+# build
 server/dist
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
