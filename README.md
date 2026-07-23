@@ -2,7 +2,7 @@
 
 Простий застосунок для керування завданнями з JWT-аутентифікацією.
 
-- **Бекенд**: Express.js + Prisma (SQLite)
+- **Бекенд**: Express.js + Prisma (SQLite), валідація даних за допомогою Zod
 - **Фронтенд**: Next.js (App Router) + React Query + Tailwind CSS
 - **Аутентифікація**: JWT (реєстрація / вхід), пароль хешується через bcrypt
 
