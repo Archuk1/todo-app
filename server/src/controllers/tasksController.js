@@ -1,16 +1,8 @@
 import prisma from "../db/prismaClient.js";
 
-export const VALID_STATUSES = ["todo", "in progress", "done"];
-
 export const getTasks = async (req, res) => {
     try {
       const { status } = req.query;
-  
-      if (status && !VALID_STATUSES.includes(status)) {
-        return res.status(400).json({
-          message: `Invalid status filter. Must be one of: ${VALID_STATUSES.join(", ")}`,
-        });
-      }
   
       const tasks = await prisma.task.findMany({
         where: {
@@ -30,7 +22,7 @@ export const getTasks = async (req, res) => {
 export const getTaskById = async (req, res) => {
     try {
       const task = await prisma.task.findFirst({
-        where: { id: Number(req.params.id), userId: req.userId },
+        where: { id: req.params.id, userId: req.userId },
       });
   
       if (!task) {
@@ -48,21 +40,11 @@ export const createTask = async (req, res) => {
     try {
       const { title, description, status } = req.body;
   
-      if (!title || !title.trim()) {
-        return res.status(400).json({ message: "Title is required" });
-      }
-  
-      if (status && !VALID_STATUSES.includes(status)) {
-        return res.status(400).json({
-          message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
-        });
-      }
-  
       const task = await prisma.task.create({
         data: {
-          title: title.trim(),
-          description: description ? String(description).trim() : "",
-          status: status || "todo",
+          title: title,
+          description: description,
+          status: status,
           userId: req.userId,
         },
       });
@@ -77,17 +59,7 @@ export const createTask = async (req, res) => {
 export const updateTask = async (req, res) => {
     try {
       const { title, description, status } = req.body;
-      const taskId = Number(req.params.id);
-  
-      if (title !== undefined && !title.trim()) {
-        return res.status(400).json({ message: "Title cannot be empty" });
-      }
-  
-      if (status !== undefined && !VALID_STATUSES.includes(status)) {
-        return res.status(400).json({
-          message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
-        });
-      }
+      const taskId = req.params.id;
   
       const existingTask = await prisma.task.findFirst({
         where: { id: taskId, userId: req.userId },
@@ -100,8 +72,8 @@ export const updateTask = async (req, res) => {
       const task = await prisma.task.update({
         where: { id: taskId },
         data: {
-          ...(title !== undefined ? { title: title.trim() } : {}),
-          ...(description !== undefined ? { description: String(description).trim() } : {}),
+          ...(title !== undefined ? { title: title } : {}),
+          ...(description !== undefined ? { description: description } : {}),
           ...(status !== undefined ? { status } : {}),
         },
       });
@@ -115,7 +87,7 @@ export const updateTask = async (req, res) => {
 
 export const deleteTask =  async (req, res) => {
     try {
-      const taskId = Number(req.params.id);
+      const taskId = req.params.id;
   
       const existingTask = await prisma.task.findFirst({
         where: { id: taskId, userId: req.userId },
