@@ -27,6 +27,19 @@ interface AuthResponse {
   user: User;
 }
 
+// Non-sensitive cookie that only signals "a token exists". It never holds the
+// JWT itself (that stays in localStorage) - middleware reads it to decide
+// whether a route should redirect, before the page even renders.
+const AUTH_COOKIE = "todo_app_auth";
+
+function setAuthCookie() {
+  document.cookie = `${AUTH_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`;
+}
+
+function clearAuthCookie() {
+  document.cookie = `${AUTH_COOKIE}=; path=/; max-age=0; samesite=lax`;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -37,17 +50,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
 
       if (!storedToken) {
+        clearAuthCookie();
         setIsLoading(false);
         return;
       }
 
       setToken(storedToken);
+      setAuthCookie();
 
       try {
         const res = await api.get<{ user: User }>("/auth/me");
         setUser(res.data.user);
       } catch {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
+        clearAuthCookie();
         setToken(null);
       } finally {
         setIsLoading(false);
@@ -60,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const res = await api.post<AuthResponse>("/auth/login", { email, password });
     localStorage.setItem(TOKEN_STORAGE_KEY, res.data.token);
+    setAuthCookie();
     setToken(res.data.token);
     setUser(res.data.user);
   }, []);
@@ -67,12 +84,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(async (email: string, password: string) => {
     const res = await api.post<AuthResponse>("/auth/register", { email, password });
     localStorage.setItem(TOKEN_STORAGE_KEY, res.data.token);
+    setAuthCookie();
     setToken(res.data.token);
     setUser(res.data.user);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    clearAuthCookie();
     setToken(null);
     setUser(null);
   }, []);

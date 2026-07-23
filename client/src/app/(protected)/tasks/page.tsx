@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Sidebar } from "@/components/Sidebar";
 import type { StatusFilterValue } from "@/components/StatusFilter";
 import { TaskForm } from "@/components/TaskForm";
@@ -89,9 +88,5 @@ function TasksPageContent() {
 }
 
 export default function TasksPage() {
-  return (
-    <ProtectedRoute>
-      <TasksPageContent />
-    </ProtectedRoute>
-  );
+  return <TasksPageContent />;
 }

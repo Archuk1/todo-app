@@ -22,6 +22,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
+      document.cookie = "todo_app_auth=; path=/; max-age=0; samesite=lax";
     }
     return Promise.reject(error);
   }
